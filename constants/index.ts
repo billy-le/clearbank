@@ -135,3 +135,5 @@ export const transactionCategoryStyles = {
     chipBackgroundColor: "bg-inherit",
   },
 };
+
+export const APPWRITE_SESSION = "appwrite-session";

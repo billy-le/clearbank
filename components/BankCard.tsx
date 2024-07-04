@@ -2,7 +2,11 @@ import { formatAmount } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
-export function BankCard({ account, userName, showBalance }: CreditCardProps) {
+export function BankCard({
+  account,
+  userName,
+  showBalance = true,
+}: CreditCardProps) {
   return (
     <div className="flex flex-col">
       <Link href="/" className="bank-card">
@@ -46,7 +50,3 @@ export function BankCard({ account, userName, showBalance }: CreditCardProps) {
     </div>
   );
 }
-
-BankCard.defaultProps = {
-  showBalance: true,
-};

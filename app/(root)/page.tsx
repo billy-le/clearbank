@@ -1,11 +1,13 @@
 import { HeaderBox } from "@/components/HeaderBox";
 import { RightSidebar } from "@/components/RightSidebar";
 import { TotalBalanceBox } from "@/components/TotalBalanceBox";
+import { getLoggedInUser } from "@/lib/actions/user.actions";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  const loggedIn = {
-    firstName: "Billy",
-  };
+export default async function Home() {
+  const user = await getLoggedInUser();
+  if (!user) redirect("/sign-in");
+
   return (
     <section className="home">
       <div className="home-content">
@@ -13,7 +15,7 @@ export default function Home() {
           <HeaderBox
             type="greeting"
             title="Welcome"
-            user={loggedIn?.firstName || "Guest"}
+            user={user?.name || "Guest"}
             subtext="Access and manage your account and transactions efficiently"
           />
           <TotalBalanceBox
@@ -25,7 +27,7 @@ export default function Home() {
         <h2>RECENT TRANSACTIONS</h2>
       </div>
       <RightSidebar
-        user={loggedIn}
+        user={user}
         transactions={[]}
         banks={[
           {
