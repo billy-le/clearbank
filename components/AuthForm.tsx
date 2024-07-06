@@ -13,9 +13,10 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signIn, signUp } from "@/lib/actions/user.actions";
 import { authFormSchema } from "@/lib/schemas/auth";
+import { PlaidLink } from "./PlaidLink";
 
 export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -43,7 +44,18 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
     try {
       switch (type) {
         case "sign-up": {
-          const newUser = await signUp(data);
+          const newUser = await signUp({
+            firstName: data.firstName!,
+            lastName: data.lastName!,
+            address1: data.address1!,
+            city: data.city!,
+            state: data.state!,
+            dateOfBirth: data.dateOfBirth!,
+            postalCode: data.postalCode!,
+            ssn: data.ssn!,
+            email: data.email,
+            password: data.password,
+          });
           setUser(newUser);
           break;
         }
@@ -59,7 +71,7 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
           throw Error("AuthForm invalid type");
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
 
     setIsLoading(false);
@@ -93,7 +105,9 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
         </div>
       </header>
       {user ? (
-        <div className="flex flex-col gap-4"></div>
+        <div className="flex flex-col gap-4">
+          <PlaidLink user={user} variant="primary" />
+        </div>
       ) : (
         <>
           <Form {...form}>

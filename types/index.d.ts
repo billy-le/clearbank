@@ -8,14 +8,14 @@ declare type SearchParamProps = {
 // ========================================
 
 declare type SignUpParams = {
-  firstName?: string;
-  lastName?: string;
-  address1?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
-  dateOfBirth?: string;
-  ssn?: string;
+  firstName: string;
+  lastName: string;
+  address1: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  dateOfBirth: string;
+  ssn: string;
   email: string;
   password: string;
 };
@@ -39,6 +39,7 @@ declare type User = {
   postalCode: string;
   dateOfBirth: string;
   ssn: string;
+  name?: string;
 };
 
 declare type NewUserParams = {
@@ -302,12 +303,12 @@ declare interface getUserInfoProps {
   userId: string;
 }
 
-declare interface exchangePublicTokenProps {
+declare interface ExchangePublicTokenParams {
   publicToken: string;
   user: User;
 }
 
-declare interface createBankAccountProps {
+declare interface CreateBankAccountParams {
   accessToken: string;
   userId: string;
   accountId: string;
@@ -346,6 +347,6 @@ namespace NodeJS {
     DWOLLA_KEY: string;
     DWOLLA_SECRET: string;
     DWOLLA_BASE_URL: string;
-    DWOLLA_ENV: string;
+    DWOLLA_ENV: "production" | "sandbox";
   }
 }
