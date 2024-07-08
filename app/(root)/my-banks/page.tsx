@@ -1,3 +1,3 @@
 export default function MyBanks() {
-  return <div></div>;
+  return <section className="flex"></section>;
 }

@@ -23,7 +23,7 @@ export function BankCard({
               <h2 className="text-12 font-semibold text-white">●● / ●●</h2>
             </div>
             <p className="text-14 font-semibold tracking-[1.1px] text-white">
-              ●●●● ●●●● ●●●● <span className="text-16">1234</span>
+              ●●●● ●●●● ●●●● <span className="text-16">{account.mask}</span>
             </p>
           </article>
         </div>

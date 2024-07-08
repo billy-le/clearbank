@@ -116,6 +116,12 @@ export const transactionCategoryStyles = {
     textColor: "text-red-700",
     chipBackgroundColor: "bg-inherit",
   },
+  Travel: {
+    borderColor: "border-blue-600",
+    backgroundColor: "bg-blue-500",
+    textColor: "text-blue-700",
+    chipBackgroundColor: "bg-inherit",
+  },
   Processing: {
     borderColor: "border-[#F2F4F7]",
     backgroundColor: "bg-gray-500",
@@ -134,6 +140,6 @@ export const transactionCategoryStyles = {
     textColor: "text-blue-700",
     chipBackgroundColor: "bg-inherit",
   },
-};
+} as const;
 
 export const APPWRITE_SESSION = "appwrite-session";

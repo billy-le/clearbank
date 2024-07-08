@@ -60,7 +60,7 @@ declare type Account = {
   type: string;
   subtype: string;
   appwriteItemId: string;
-  sharableId: string;
+  shareableId: string;
 };
 
 declare type Transaction = {
@@ -75,7 +75,6 @@ declare type Transaction = {
   category: string;
   date: string;
   image: string;
-  type: string;
   $createdAt: string;
   channel: string;
   senderBankId: string;
@@ -89,7 +88,7 @@ declare type Bank = {
   accessToken: string;
   fundingSourceUrl: string;
   userId: string;
-  sharableId: string;
+  shareableId: string;
 };
 
 declare type AccountTypes =
@@ -217,7 +216,7 @@ declare interface FooterProps {
 declare interface RightSidebarProps {
   user: User;
   transactions: Transaction[];
-  banks: Bank[] & Account[];
+  banks: Account[];
 }
 
 declare interface SiderbarProps {
@@ -257,19 +256,19 @@ declare interface PaymentTransferFormProps {
 }
 
 // Actions
-declare interface getAccountsProps {
+declare interface GetAccountsParams {
   userId: string;
 }
 
-declare interface getAccountProps {
+declare interface GetAccountParams {
   appwriteItemId: string;
 }
 
-declare interface getInstitutionProps {
+declare interface GetInstitutionParams {
   institutionId: string;
 }
 
-declare interface getTransactionsProps {
+declare interface GetTransactionsParams {
   accessToken: string;
 }
 
@@ -280,7 +279,7 @@ declare interface CreateFundingSourceOptions {
   _links: object; // Dwolla On Demand Authorization Link
 }
 
-declare interface CreateTransactionProps {
+declare interface CreateTransactionParams {
   name: string;
   amount: string;
   senderId: string;
@@ -290,7 +289,7 @@ declare interface CreateTransactionProps {
   email: string;
 }
 
-declare interface getTransactionsByBankIdProps {
+declare interface GetTransactionsByBankIdParams {
   bankId: string;
 }
 
@@ -299,7 +298,7 @@ declare interface SignInProps {
   password: string;
 }
 
-declare interface getUserInfoProps {
+declare interface GetUserInfoParams {
   userId: string;
 }
 
@@ -314,18 +313,18 @@ declare interface CreateBankAccountParams {
   accountId: string;
   bankId: string;
   fundingSourceUrl: string;
-  sharableId: string;
+  shareableId: string;
 }
 
-declare interface getBanksProps {
+declare interface GetBanksParams {
   userId: string;
 }
 
-declare interface getBankProps {
+declare interface GetBankParams {
   documentId: string;
 }
 
-declare interface getBankByAccountIdProps {
+declare interface GetBankByAccountIdParams {
   accountId: string;
 }
 
@@ -349,4 +348,11 @@ namespace NodeJS {
     DWOLLA_BASE_URL: string;
     DWOLLA_ENV: "production" | "sandbox";
   }
+}
+
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 }

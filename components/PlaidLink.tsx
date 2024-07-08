@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
@@ -10,6 +12,8 @@ import {
   createLinkToken,
   exchangePublicToken,
 } from "@/lib/actions/user.actions";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export function PlaidLink({ user, variant }: PlaidLinkProps) {
   const [token, setToken] = useState("");
@@ -54,9 +58,34 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
           Connect Bank
         </Button>
       ) : variant === "ghost" ? (
-        <Button className="plaidlink-ghost">Connect Bank</Button>
+        <Button
+          className="plaidlink-ghost"
+          variant="ghost"
+          onClick={() => open()}
+        >
+          <Image
+            src="/icons/connect-bank.svg"
+            alt="connect bank"
+            width={24}
+            height={24}
+          />
+          <p className="hidden text-base font-semibold text-black-2 xl:block">
+            Connect Bank
+          </p>
+        </Button>
       ) : (
-        <Button>Connect Bank</Button>
+        <Button
+          className={cn("plaidlink-default", "px-3")}
+          onClick={() => open()}
+        >
+          <Image
+            src="/icons/connect-bank.svg"
+            alt="connect bank"
+            width={24}
+            height={24}
+          />
+          <p className="text-base font-semibold text-black-2">Connect Bank</p>
+        </Button>
       )}
     </>
   );
