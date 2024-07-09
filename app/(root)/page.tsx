@@ -9,7 +9,7 @@ export default async function Home({
   searchParams: { id, page },
 }: SearchParamProps) {
   const pageNum = parseInt(page as string, 10);
-  const currentPage = page && isNaN(pageNum) ? pageNum : 1;
+  const currentPage = page && !isNaN(pageNum) ? pageNum : 1;
   const user = await getLoggedInUser();
   const accounts = await getAccounts({ userId: user!.$id });
   if (!accounts) return null;

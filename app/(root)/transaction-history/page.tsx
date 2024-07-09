@@ -1,21 +1,36 @@
 import { HeaderBox } from "@/components/HeaderBox";
+import { Pagination } from "@/components/Pagination";
 import { TransactionsTable } from "@/components/TransactionsTable";
 import { getAccount, getAccounts } from "@/lib/actions/bank.actions";
 import { getLoggedInUser } from "@/lib/actions/user.actions";
 import { formatAmount } from "@/lib/utils";
 
+const rowsPerPage = 10;
+
 export default async function TransactionHistory({
   searchParams: { id, page },
 }: SearchParamProps) {
   const pageNum = parseInt(page as string, 10);
-  const currentPage = page && isNaN(pageNum) ? pageNum : 1;
+  const currentPage = page && !isNaN(pageNum) ? pageNum : 1;
   const user = await getLoggedInUser();
   const accounts = await getAccounts({ userId: user!.$id });
+
   if (!accounts) return null;
 
   const accountsData = accounts.data;
   const appwriteItemId = (id as string) ?? accountsData?.[0]?.appwriteItemId;
   const account = await getAccount({ appwriteItemId });
+
+  const totalPages = Math.ceil(
+    (account?.transactions?.length ?? 1) / rowsPerPage
+  );
+  const indexOfLastTransaction = currentPage * rowsPerPage;
+  const indexOfFirstTransaction = indexOfLastTransaction - rowsPerPage;
+  const currentTransactions =
+    account?.transactions?.slice(
+      indexOfFirstTransaction,
+      indexOfLastTransaction
+    ) ?? [];
 
   return (
     <section className="transactions">
@@ -46,7 +61,8 @@ export default async function TransactionHistory({
         </div>
 
         <section className="flex w-full flex-col gap-6">
-          <TransactionsTable transactions={account?.transactions ?? []} />
+          <TransactionsTable transactions={currentTransactions} />
+          <Pagination page={currentPage} totalPages={totalPages} />
         </section>
       </div>
     </section>

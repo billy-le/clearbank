@@ -1,13 +1,6 @@
 "use server";
 
-import {
-  ACHClass,
-  CountryCode,
-  TransferAuthorizationCreateRequest,
-  TransferCreateRequest,
-  TransferNetwork,
-  TransferType,
-} from "plaid";
+import { CountryCode, Institution } from "plaid";
 
 import { plaidClient } from "../plaid";
 import { parseStringify } from "../utils";
@@ -35,7 +28,7 @@ export async function getAccounts({ userId }: GetAccountsParams) {
         id: accountData.account_id,
         availableBalance: accountData.balances.available!,
         currentBalance: accountData.balances.current!,
-        institutionId: institution.institution_id,
+        institutionId: institution?.institution_id!,
         name: accountData.name,
         officialName: accountData.official_name!,
         mask: accountData.mask!,
@@ -68,7 +61,12 @@ export async function getAccounts({ userId }: GetAccountsParams) {
   }
 }
 
-export async function getAccount({ appwriteItemId }: GetAccountParams) {
+export async function getAccount({
+  appwriteItemId,
+}: GetAccountParams): Promise<{
+  data: Account;
+  transactions: Transaction[];
+} | null> {
   try {
     // get bank from db
     const bank = await getBank({ documentId: appwriteItemId });
@@ -109,7 +107,7 @@ export async function getAccount({ appwriteItemId }: GetAccountParams) {
       id: accountData.account_id,
       availableBalance: accountData.balances.available!,
       currentBalance: accountData.balances.current!,
-      institutionId: institution.institution_id,
+      institutionId: institution?.institution_id!,
       name: accountData.name,
       officialName: accountData.official_name,
       mask: accountData.mask!,
@@ -126,15 +124,13 @@ export async function getAccount({ appwriteItemId }: GetAccountParams) {
     return parseStringify({
       data: account,
       transactions: allTransactions,
-    }) as {
-      data: Account;
-      transactions: Transaction[];
-    };
+    });
   } catch (error) {
     console.error(
       "An error occurred while getting the account:",
       error.message
     );
+    return null;
   }
 }
 
@@ -147,15 +143,16 @@ export async function getInstitution({ institutionId }: GetInstitutionParams) {
 
     const intitution = institutionResponse.data.institution;
 
-    return parseStringify(intitution);
+    return parseStringify(intitution) as Institution;
   } catch (error) {
     console.error("An error occurred while getting the accounts:", error);
+    return null;
   }
 }
 
 export async function getTransactions({ accessToken }: GetTransactionsParams) {
   let hasMore = true;
-  let transactions: any = [];
+  let transactions: any[] = [];
 
   try {
     // Iterate through each page of new transaction updates for item
@@ -182,11 +179,12 @@ export async function getTransactions({ accessToken }: GetTransactionsParams) {
       hasMore = data.has_more;
     }
 
-    return parseStringify(transactions);
+    return parseStringify(transactions) as any[];
   } catch (error) {
     console.error(
       "An error occurred while getting the accounts:",
       error.message
     );
+    return [] as any[];
   }
 }

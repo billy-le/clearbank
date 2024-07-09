@@ -21,7 +21,6 @@ import type { Models } from "node-appwrite";
 const {
   APPWRITE_BANK_COLLECTION_ID,
   APPWRITE_DATABASE_ID,
-  APPWRITE_TRANSACTION_COLLECTION_ID,
   APPWRITE_USER_COLLECTION_ID,
   PLAID_CLIENT_ID,
   PLAID_SECRET,
@@ -61,10 +60,14 @@ export async function signIn({ email, password }: SignInProps) {
     return user;
   } catch (error) {
     console.error("Error", error);
+    return null;
   }
 }
 
-export async function signUp({ password, ...data }: SignUpParams) {
+export async function signUp({
+  password,
+  ...data
+}: SignUpParams): Promise<User | null> {
   let newUserAccount: Models.User<Models.Preferences>;
   try {
     const { account, database } = await createAdminClient();
@@ -112,6 +115,7 @@ export async function signUp({ password, ...data }: SignUpParams) {
     return parseStringify(newUser);
   } catch (error) {
     console.error("Error", error);
+    return null;
   }
 }
 
@@ -137,7 +141,9 @@ export async function signOut() {
   }
 }
 
-export async function createLinkToken(user: User) {
+export async function createLinkToken(
+  user: User
+): Promise<{ linkToken: string } | null> {
   try {
     const tokenParams: LinkTokenCreateRequest = {
       user: {
@@ -156,10 +162,13 @@ export async function createLinkToken(user: User) {
     return parseStringify({ linkToken: res.data.link_token });
   } catch (error) {
     console.error("Error", error.message);
+    return null;
   }
 }
 
-export async function createBankAccount(params: CreateBankAccountParams) {
+export async function createBankAccount(
+  params: CreateBankAccountParams
+): Promise<Bank | null> {
   try {
     const { database } = await createAdminClient();
 
@@ -173,13 +182,16 @@ export async function createBankAccount(params: CreateBankAccountParams) {
     return parseStringify(bankAccount);
   } catch (error) {
     console.error("Error", error.message);
+    return null;
   }
 }
 
 export async function exchangePublicToken({
   publicToken,
   user,
-}: ExchangePublicTokenParams) {
+}: ExchangePublicTokenParams): Promise<{
+  publicExchangeToken: "complete";
+} | null> {
   try {
     const publicTokenRes = await plaidClient.itemPublicTokenExchange({
       public_token: publicToken,
@@ -212,7 +224,7 @@ export async function exchangePublicToken({
 
     if (!fundingSourceUrl) throw Error();
 
-    const bank = await createBankAccount({
+    await createBankAccount({
       userId: user.$id,
       bankId: itemId,
       accountId: accountData.account_id,
@@ -228,6 +240,7 @@ export async function exchangePublicToken({
     });
   } catch (error) {
     console.error("Error", error.message);
+    return null;
   }
 }
 
@@ -244,12 +257,13 @@ export async function getBanks({ userId }: GetBanksParams) {
     return parseStringify(banks.documents) as Bank[];
   } catch (error) {
     console.error(error.message);
+    return [];
   }
 }
 
 export async function getBank({
   documentId,
-}: GetBankParams): Promise<Bank | undefined> {
+}: GetBankParams): Promise<any | null> {
   try {
     const { database } = await createAdminClient();
 
@@ -259,8 +273,32 @@ export async function getBank({
       documentId
     );
 
-    return parseStringify(bank) as Bank;
+    return parseStringify(bank);
   } catch (error) {
     console.error(error.message);
+    return null;
+  }
+}
+
+export async function getBankByAccountId({
+  accountId,
+}: GetBankByAccountIdParams): Promise<any | null> {
+  try {
+    const { database } = await createAdminClient();
+
+    const bank = await database.listDocuments(
+      APPWRITE_DATABASE_ID,
+      APPWRITE_BANK_COLLECTION_ID,
+      [Query.equal("accountId", [accountId])]
+    );
+
+    if (bank.total !== 1) {
+      return null;
+    }
+
+    return parseStringify(bank.documents[0]);
+  } catch (error) {
+    console.error(error.message);
+    return null;
   }
 }

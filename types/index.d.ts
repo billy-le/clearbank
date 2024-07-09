@@ -114,7 +114,7 @@ declare type Receiver = {
 declare type TransferParams = {
   sourceFundingSourceUrl: string;
   destinationFundingSourceUrl: string;
-  amount: string;
+  amount: number;
 };
 
 declare type AddFundingSourceParams = {
@@ -281,7 +281,7 @@ declare interface CreateFundingSourceOptions {
 
 declare interface CreateTransactionParams {
   name: string;
-  amount: string;
+  amount: number;
   senderId: string;
   senderBankId: string;
   receiverId: string;

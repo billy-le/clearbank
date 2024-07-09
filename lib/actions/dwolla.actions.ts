@@ -31,6 +31,7 @@ export const createFundingSource = async (
       .then((res) => res.headers.get("location"));
   } catch (err) {
     console.error("Creating a Funding Source Failed: ", err.message);
+    return null;
   }
 };
 
@@ -43,6 +44,7 @@ export const createOnDemandAuthorization = async () => {
     return authLink;
   } catch (err) {
     console.error("Creating an On Demand Authorization Failed: ", err.message);
+    return null;
   }
 };
 
@@ -55,14 +57,15 @@ export const createDwollaCustomer = async (
       .then((res) => res.headers.get("location"));
   } catch (err) {
     console.error("Creating a Dwolla Customer Failed: ", err.message);
+    return null;
   }
 };
 
-export const createTransfer = async ({
+export async function createTransfer({
   sourceFundingSourceUrl,
   destinationFundingSourceUrl,
   amount,
-}: TransferParams) => {
+}: TransferParams) {
   try {
     const requestBody = {
       _links: {
@@ -83,14 +86,15 @@ export const createTransfer = async ({
       .then((res) => res.headers.get("location"));
   } catch (err) {
     console.error("Transfer fund failed: ", err.message);
+    return null;
   }
-};
+}
 
-export const addFundingSource = async ({
+export async function addFundingSource({
   dwollaCustomerId,
   processorToken,
   bankName,
-}: AddFundingSourceParams) => {
+}: AddFundingSourceParams) {
   try {
     // create dwolla auth link
     const dwollaAuthLinks = await createOnDemandAuthorization();
@@ -105,5 +109,6 @@ export const addFundingSource = async ({
     return await createFundingSource(fundingSourceOptions);
   } catch (err) {
     console.error("Transfer fund failed: ", err.message);
+    return null;
   }
-};
+}

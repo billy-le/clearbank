@@ -24,15 +24,19 @@ export async function createTransaction(transaction: CreateTransactionParams) {
       }
     );
 
-    return parseStringify(newTransaction);
+    return parseStringify(newTransaction) as Transaction;
   } catch (error) {
-    console.error(error.message);
+    console.error("createTransaction error:", error.message);
+    return null;
   }
 }
 
 export async function getTransactionsByBankId({
   bankId,
-}: GetTransactionsByBankIdParams) {
+}: GetTransactionsByBankIdParams): Promise<{
+  total: number;
+  documents: Transaction[];
+}> {
   try {
     const { database } = await createAdminClient();
 
@@ -58,6 +62,7 @@ export async function getTransactionsByBankId({
 
     return parseStringify(transactions);
   } catch (error) {
-    console.error(error.message);
+    console.error("getTransactionsByBankId error:", error.message);
+    return { total: 0, documents: [] as Transaction[] };
   }
 }
