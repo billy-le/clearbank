@@ -34,7 +34,7 @@ export function MobileNav({ user }: MobileNavProps) {
               className="cursor-pointer flex items-center gap-2 px-4"
             >
               <Image
-                src="/icons/logo.svg"
+                src="/icons/clearbank-logo.png"
                 width={34}
                 height={34}
                 alt="ClearBank Logo"

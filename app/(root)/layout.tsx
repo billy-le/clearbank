@@ -17,7 +17,12 @@ export default async function RootLayout({
       <Sidebar user={user} />
       <div className="flex size-full flex-col">
         <div className="root-layout">
-          <Image src="/icons/logo.svg" width={30} height={30} alt="menu icon" />
+          <Image
+            src="/icons/clearbank-logo.png"
+            width={30}
+            height={30}
+            alt="menu icon"
+          />
           <MobileNav user={user} />
         </div>
         {children}

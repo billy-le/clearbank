@@ -10,6 +10,10 @@ export function Pagination({ page, totalPages }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams()!;
 
+  if (totalPages <= 1) {
+    return null;
+  }
+
   const handleNavigation = (type: "prev" | "next") => {
     const pageNumber = type === "prev" ? page - 1 : page + 1;
 
