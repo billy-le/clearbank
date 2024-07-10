@@ -1,6 +1,7 @@
 "use server";
 
 import { Client } from "dwolla-v2";
+import { handleError } from "../utils";
 
 const getEnvironment = () => {
   const environment = process.env.DWOLLA_ENV;
@@ -30,7 +31,7 @@ export const createFundingSource = async (
       })
       .then((res) => res.headers.get("location"));
   } catch (err) {
-    console.error("Creating a Funding Source Failed: ", err.message);
+    handleError("Creating a Funding Source Failed:", err);
     return null;
   }
 };
@@ -43,7 +44,7 @@ export const createOnDemandAuthorization = async () => {
     const authLink = onDemandAuthorization.body._links;
     return authLink;
   } catch (err) {
-    console.error("Creating an On Demand Authorization Failed: ", err.message);
+    handleError("Creating an On Demand Authorization Failed:", err);
     return null;
   }
 };
@@ -56,7 +57,7 @@ export const createDwollaCustomer = async (
       .post("customers", newCustomer)
       .then((res) => res.headers.get("location"));
   } catch (err) {
-    console.error("Creating a Dwolla Customer Failed: ", err.message);
+    handleError("Creating a Dwolla Customer Failed:", err);
     return null;
   }
 };
@@ -85,7 +86,7 @@ export async function createTransfer({
       .post("transfers", requestBody)
       .then((res) => res.headers.get("location"));
   } catch (err) {
-    console.error("Transfer fund failed: ", err.message);
+    handleError("Transfer fund failed:", err);
     return null;
   }
 }
@@ -108,7 +109,7 @@ export async function addFundingSource({
     };
     return await createFundingSource(fundingSourceOptions);
   } catch (err) {
-    console.error("Transfer fund failed: ", err.message);
+    handleError("Adding Funding Source failed:", err);
     return null;
   }
 }

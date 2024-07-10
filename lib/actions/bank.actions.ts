@@ -7,6 +7,7 @@ import { parseStringify } from "../utils";
 
 import { getTransactionsByBankId } from "./transaction.actions";
 import { getBanks, getBank } from "./user.actions";
+import { handleError } from "../utils";
 
 export async function getAccounts({ userId }: GetAccountsParams) {
   try {
@@ -54,10 +55,7 @@ export async function getAccounts({ userId }: GetAccountsParams) {
       totalCurrentBalance,
     }) as { data: Account[]; totalBanks: number; totalCurrentBalance: number };
   } catch (error) {
-    console.error(
-      "An error occurred while getting the accounts:",
-      error.message
-    );
+    handleError("An error occurred while getting the accounts:", error);
   }
 }
 
@@ -126,10 +124,7 @@ export async function getAccount({
       transactions: allTransactions,
     });
   } catch (error) {
-    console.error(
-      "An error occurred while getting the account:",
-      error.message
-    );
+    handleError("An error occurred while getting the account:", error);
     return null;
   }
 }
@@ -145,7 +140,7 @@ export async function getInstitution({ institutionId }: GetInstitutionParams) {
 
     return parseStringify(intitution) as Institution;
   } catch (error) {
-    console.error("An error occurred while getting the accounts:", error);
+    handleError("An error occurred while getting the accounts:", error);
     return null;
   }
 }
@@ -181,10 +176,7 @@ export async function getTransactions({ accessToken }: GetTransactionsParams) {
 
     return parseStringify(transactions) as any[];
   } catch (error) {
-    console.error(
-      "An error occurred while getting the accounts:",
-      error.message
-    );
+    handleError("An error occurred while getting the transactions:", error);
     return [] as any[];
   }
 }

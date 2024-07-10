@@ -193,3 +193,13 @@ export const getTransactionStatus = (date: Date) => {
 
   return date > twoDaysAgo ? "Processing" : "Success";
 };
+
+export function handleError(errorMessage: string, err: unknown) {
+  if (err instanceof Error) {
+    console.trace(errorMessage, err.message);
+  } else if (typeof err === "string") {
+    console.trace(errorMessage, err);
+  } else {
+    console.log(errorMessage, "Unknown Error:", err);
+  }
+}

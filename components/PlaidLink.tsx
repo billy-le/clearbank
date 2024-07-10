@@ -16,13 +16,13 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export function PlaidLink({ user, variant }: PlaidLinkProps) {
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState<null | string>(null);
   const router = useRouter();
 
   useEffect(() => {
     const getLinkToken = async () => {
       const data = await createLinkToken(user);
-      setToken(data?.linkToken);
+      setToken(data?.linkToken ?? null);
     };
 
     getLinkToken();
@@ -37,7 +37,7 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
 
       router.push("/");
     },
-    [user]
+    [user, router]
   );
 
   const config: PlaidLinkOptions = {

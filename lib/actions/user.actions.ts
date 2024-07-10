@@ -3,7 +3,12 @@
 import { ID, Query } from "node-appwrite";
 import { createAdminClient, createSessionClient } from "@/lib/server/appwrite";
 import { cookies } from "next/headers";
-import { encryptId, extractCustomerIdFromUrl, parseStringify } from "../utils";
+import {
+  encryptId,
+  extractCustomerIdFromUrl,
+  parseStringify,
+  handleError,
+} from "../utils";
 import { APPWRITE_SESSION } from "@/constants";
 import { plaidClient } from "../plaid";
 import {
@@ -47,7 +52,6 @@ export async function signIn({ email, password }: SignInProps) {
   try {
     const { account } = await createAdminClient();
     const session = await account.createEmailPasswordSession(email, password);
-
     cookies().set(APPWRITE_SESSION, session.secret, {
       path: "/",
       httpOnly: true,
@@ -58,8 +62,8 @@ export async function signIn({ email, password }: SignInProps) {
     const user = await getUserInfo({ userId: session.userId });
 
     return user;
-  } catch (error) {
-    console.error("Error", error);
+  } catch (err) {
+    handleError("Sign in failed:", err);
     return null;
   }
 }
@@ -113,8 +117,8 @@ export async function signUp({
     });
 
     return parseStringify(newUser);
-  } catch (error) {
-    console.error("Error", error);
+  } catch (err) {
+    handleError("Sign up failed:", err);
     return null;
   }
 }
@@ -124,8 +128,8 @@ export async function getLoggedInUser() {
     const { account } = await createSessionClient();
     const userAccount = await account.get();
     return await getUserInfo({ userId: userAccount.$id });
-  } catch (error) {
-    console.error("Error", error);
+  } catch (err) {
+    handleError("Get Logged In User failed:", err);
     return null;
   }
 }
@@ -135,8 +139,8 @@ export async function signOut() {
     const { account } = await createSessionClient();
     cookies().delete(APPWRITE_SESSION);
     return await account.deleteSession("current");
-  } catch (error) {
-    console.error("Error", error.message);
+  } catch (err) {
+    handleError("Sign out failed:", err);
     return null;
   }
 }
@@ -160,8 +164,8 @@ export async function createLinkToken(
     const res = await plaidClient.linkTokenCreate(tokenParams);
 
     return parseStringify({ linkToken: res.data.link_token });
-  } catch (error) {
-    console.error("Error", error.message);
+  } catch (err) {
+    handleError("Create Link Token failed:", err);
     return null;
   }
 }
@@ -180,8 +184,8 @@ export async function createBankAccount(
     );
 
     return parseStringify(bankAccount);
-  } catch (error) {
-    console.error("Error", error.message);
+  } catch (err) {
+    handleError("Create Bank Account failed:", err);
     return null;
   }
 }
@@ -238,8 +242,8 @@ export async function exchangePublicToken({
     return parseStringify({
       publicTokenExchange: "complete",
     });
-  } catch (error) {
-    console.error("Error", error.message);
+  } catch (err) {
+    handleError("Exchange Public Token failed:", err);
     return null;
   }
 }
@@ -255,8 +259,8 @@ export async function getBanks({ userId }: GetBanksParams) {
     );
 
     return parseStringify(banks.documents) as Bank[];
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    handleError("Get Banks failed:", err);
     return [];
   }
 }
@@ -274,8 +278,8 @@ export async function getBank({
     );
 
     return parseStringify(bank);
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    handleError("Get Bank by ID Failed:", err);
     return null;
   }
 }
@@ -297,8 +301,8 @@ export async function getBankByAccountId({
     }
 
     return parseStringify(bank.documents[0]);
-  } catch (error) {
-    console.error(error.message);
+  } catch (err) {
+    handleError("Get Bank Account By Account ID failed:", err);
     return null;
   }
 }
