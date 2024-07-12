@@ -3,6 +3,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { getLoggedInUser } from "@/lib/actions/user.actions";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import Script from "next/script";
 
 export default async function RootLayout({
   children,
@@ -27,6 +28,12 @@ export default async function RootLayout({
         </div>
         {children}
       </div>
+      <Script
+        defer
+        data-domain="clearbank.billyle.dev"
+        src="https://plausible-rgwwkgs.billyle.dev:8000/js/script.js"
+        strategy="beforeInteractive"
+      />
     </main>
   );
 }

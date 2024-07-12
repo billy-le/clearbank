@@ -1,8 +1,8 @@
 export const dynamic = "force-dynamic";
-
-import type { Metadata } from "next";
+import Script from "next/script";
 import { Inter, IBM_Plex_Serif } from "next/font/google";
 import "./globals.css";
+import type { Metadata } from "next";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const ibmPlexSerif = IBM_Plex_Serif({
@@ -28,6 +28,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${ibmPlexSerif.variable}`}>
         {children}
+        <Script
+          defer
+          data-domain="clearbank.billyle.dev"
+          src="https://plausible-rgwwkgs.billyle.dev:8000/js/script.js"
+          strategy="beforeInteractive"
+        />
       </body>
     </html>
   );
