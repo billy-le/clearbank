@@ -1,5 +1,5 @@
+import { Analytics } from "@/components/Analytics";
 import Image from "next/image";
-import Script from "next/script";
 
 export default function RootLayout({
   children,
@@ -21,12 +21,7 @@ export default function RootLayout({
           />
         </div>
       </div>
-      <Script
-        defer
-        data-domain="clearbank.billyle.dev"
-        src="https://plausible-rgwwkgs.billyle.dev:8000/js/script.js"
-        strategy="beforeInteractive"
-      />
+      <Analytics />
     </main>
   );
 }

@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
-import Script from "next/script";
 import { Inter, IBM_Plex_Serif } from "next/font/google";
+import { Analytics } from "@/components/Analytics";
 import "./globals.css";
 import type { Metadata } from "next";
 
@@ -28,12 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${ibmPlexSerif.variable}`}>
         {children}
-        <Script
-          defer
-          data-domain="clearbank.billyle.dev"
-          src="https://plausible-rgwwkgs.billyle.dev:8000/js/script.js"
-          strategy="beforeInteractive"
-        />
+        <Analytics />
       </body>
     </html>
   );
