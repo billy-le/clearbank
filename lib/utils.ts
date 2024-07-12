@@ -2,6 +2,7 @@
 import { type ClassValue, clsx } from "clsx";
 import qs from "query-string";
 import { twMerge } from "tailwind-merge";
+import { logger } from "./logger";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -195,11 +196,5 @@ export const getTransactionStatus = (date: Date) => {
 };
 
 export function handleError(errorMessage: string, err: unknown) {
-  if (err instanceof Error) {
-    console.trace(errorMessage, err.message);
-  } else if (typeof err === "string") {
-    console.trace(errorMessage, err);
-  } else {
-    console.log(errorMessage, "Unknown Error:", err);
-  }
+  logger.error(errorMessage, err);
 }

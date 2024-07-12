@@ -15,7 +15,7 @@ export function Sidebar({ user }: SiderbarProps) {
       <nav className="flex flex-col gap-4">
         <Link href="/" className="mb-12 cursor-pointer flex items-center gap-2">
           <Image
-            src="/icons/clearbank-logo.png"
+            src="/icons/clearbank_logo.png"
             width={34}
             height={34}
             alt="ClearBank Logo"

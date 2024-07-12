@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   title: "ClearBank",
   description: "ClearBank is a modern banking platform for everyone.",
   icons: {
-    icon: "/icons/clearbank-logo.png",
+    icon: "/icons/clearbank_logo.png",
   },
 };
 

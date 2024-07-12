@@ -82,7 +82,7 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
       <header className="flex flex-col gap-5 md:gap-8">
         <Link href="/" className="cursor-pointer flex items-center gap-1">
           <Image
-            src="/icons/clearbank-logo.png"
+            src="/icons/clearbank_logo.png"
             width={34}
             height={34}
             alt="ClearBank Logo"
