@@ -11,6 +11,7 @@ export default async function Home({
   const pageNum = parseInt(page as string, 10);
   const currentPage = page && !isNaN(pageNum) ? pageNum : 1;
   const user = await getLoggedInUser();
+  if (!user) return null;
   const accounts = await getAccounts({ userId: user!.$id });
   if (!accounts) return null;
 
