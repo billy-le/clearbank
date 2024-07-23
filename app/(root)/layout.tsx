@@ -1,6 +1,7 @@
 import { Analytics } from "@/components/Analytics";
 import { MobileNav } from "@/components/MobileNav";
 import { Sidebar } from "@/components/Sidebar";
+import { Toaster } from "@/components/ui/toaster";
 import { getLoggedInUser } from "@/lib/actions/user.actions";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -29,6 +30,7 @@ export default async function RootLayout({
         {children}
       </div>
       <Analytics />
+      <Toaster />
     </main>
   );
 }

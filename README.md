@@ -10,7 +10,7 @@ ClearBank is a financial banking app that uses Plaid to connect to your bank acc
 
 - [x] Types for safety null checks
 - [x] Error handling and logging
-- [] Error notification / toaster
+- [x] Error notification / toaster
 - [] Advanced form validation
 - [] UI loading states
 - [] State management

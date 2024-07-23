@@ -14,9 +14,11 @@ import { useRouter } from "next/navigation";
 import { signIn, signUp } from "@/lib/actions/user.actions";
 import { authFormSchema } from "@/lib/schemas/auth";
 import { PlaidLink } from "./PlaidLink";
+import { useToast } from "@/components/ui/use-toast";
 
 export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
   const [user, setUser] = useState<User | null>(null);
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -56,6 +58,7 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
             email: data.email,
             password: data.password,
           });
+          if (!newUser) throw new Error("Unable to create account");
           setUser(newUser);
           break;
         }
@@ -64,14 +67,23 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
             email: data.email,
             password: data.password,
           });
-          if (response) router.push("/");
+
+          if (!response) throw new Error("Unable to login");
+
+          router.push("/");
           break;
         }
         default:
           throw Error("AuthForm invalid type");
       }
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error) {
+        toast({
+          title: "Something went wrong",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     }
 
     setIsLoading(false);

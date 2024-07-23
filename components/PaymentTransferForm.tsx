@@ -1,11 +1,12 @@
 "use client";
 
+import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { useToast } from "./ui/use-toast";
 
 import { createTransfer } from "@/lib/actions/dwolla.actions";
 import { createTransaction } from "@/lib/actions/transaction.actions";
@@ -39,6 +40,7 @@ const formSchema = z.object({
 
 export function PaymentTransferForm({ accounts }: PaymentTransferFormProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -60,37 +62,49 @@ export function PaymentTransferForm({ accounts }: PaymentTransferFormProps) {
       const receiverBank = await getBankByAccountId({
         accountId: receiverAccountId,
       });
+      if (!receiverBank)
+        throw new Error("Unable to retrieve receiver's bank info");
+
       const senderBank = await getBank({ documentId: data.senderBank });
+
+      if (!senderBank) throw new Error("Unable to retrieve sender's bank info");
 
       const transferParams = {
         sourceFundingSourceUrl: senderBank!.fundingSourceUrl,
         destinationFundingSourceUrl: receiverBank!.fundingSourceUrl,
         amount: data.amount,
       };
+
       // create transfer
       const transfer = await createTransfer(transferParams);
 
+      if (!transfer) throw new Error("Unable to create transfer");
+
       // create transfer transaction
-      if (transfer) {
-        const transaction: CreateTransactionParams = {
-          name: data.name,
-          amount: data.amount,
-          senderId: senderBank!.userId.$id,
-          senderBankId: senderBank!.$id,
-          receiverId: receiverBank!.userId.$id,
-          receiverBankId: receiverBank!.$id,
-          email: data.email,
-        };
+      const transaction: CreateTransactionParams = {
+        name: data.name,
+        amount: data.amount,
+        senderId: senderBank!.userId.$id,
+        senderBankId: senderBank!.$id,
+        receiverId: receiverBank!.userId.$id,
+        receiverBankId: receiverBank!.$id,
+        email: data.email,
+      };
 
-        const newTransaction = await createTransaction(transaction);
+      const newTransaction = await createTransaction(transaction);
+      if (!newTransaction) throw new Error("Unable to create transaction");
 
-        if (newTransaction) {
-          form.reset();
-          router.push("/");
-        }
-      }
+      form.reset();
+      router.push("/");
     } catch (error) {
-      console.error("Submitting create transfer request failed: ", error);
+      if (error instanceof Error) {
+        toast({
+          title: "Unable to complete transfer",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+      console.log("Submitting create transfer request failed: ", error);
     }
 
     setIsLoading(false);
@@ -240,7 +254,11 @@ export function PaymentTransferForm({ accounts }: PaymentTransferFormProps) {
         />
 
         <div className="payment-transfer_btn-box">
-          <Button type="submit" className="payment-transfer_btn">
+          <Button
+            type="submit"
+            className="payment-transfer_btn"
+            disabled={isLoading}
+          >
             {isLoading ? (
               <>
                 <Loader2 size={20} className="animate-spin" /> &nbsp; Sending...

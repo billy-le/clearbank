@@ -195,5 +195,5 @@ export const getTransactionStatus = (date: Date) => {
 };
 
 export function handleError(errorMessage: string, err: unknown) {
-  console.error(errorMessage, err);
+  console.log(errorMessage, err);
 }

@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
+  PlaidLinkStableEvent,
   usePlaidLink,
   type PlaidLinkOnSuccess,
   type PlaidLinkOptions,
 } from "react-plaid-link";
 import { useRouter } from "next/navigation";
+import { useToast } from "./ui/use-toast";
 import {
   createLinkToken,
   exchangePublicToken,
@@ -18,6 +20,7 @@ import { cn } from "@/lib/utils";
 export function PlaidLink({ user, variant }: PlaidLinkProps) {
   const [token, setToken] = useState<null | string>(null);
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     const getLinkToken = async () => {
@@ -43,6 +46,15 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
   const config: PlaidLinkOptions = {
     token,
     onSuccess,
+    onEvent: (event) => {
+      if (event === PlaidLinkStableEvent.ERROR) {
+        toast({
+          title: "Something went wrong",
+          description: "Unable to connect to Plaid",
+          variant: "destructive",
+        });
+      }
+    },
   };
 
   const { open, ready } = usePlaidLink(config);
