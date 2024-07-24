@@ -19,17 +19,9 @@ import { cn } from "@/lib/utils";
 
 export function PlaidLink({ user, variant }: PlaidLinkProps) {
   const [token, setToken] = useState<null | string>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { toast } = useToast();
-
-  useEffect(() => {
-    const getLinkToken = async () => {
-      const data = await createLinkToken(user);
-      setToken(data?.linkToken ?? null);
-    };
-
-    getLinkToken();
-  }, [user]);
 
   const onSuccess = useCallback<PlaidLinkOnSuccess>(
     async (publicToken: string) => {
@@ -47,24 +39,55 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
     token,
     onSuccess,
     onEvent: (event) => {
-      if (event === PlaidLinkStableEvent.ERROR) {
-        toast({
-          title: "Something went wrong",
-          description: "Unable to connect to Plaid",
-          variant: "destructive",
-        });
+      switch (event) {
+        case PlaidLinkStableEvent.ERROR: {
+          toast({
+            title: "Something went wrong",
+            description: "Unable to connect to Plaid",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          break;
+        }
+        case PlaidLinkStableEvent.OPEN: {
+          setIsLoading(true);
+          break;
+        }
+        case PlaidLinkStableEvent.HANDOFF:
+        case PlaidLinkStableEvent.EXIT: {
+          setIsLoading(false);
+          break;
+        }
+        default: {
+          break;
+        }
       }
     },
   };
 
   const { open, ready } = usePlaidLink(config);
 
+  useEffect(() => {
+    const getLinkToken = async () => {
+      const data = await createLinkToken(user);
+      setToken(data?.linkToken ?? null);
+    };
+
+    getLinkToken();
+  }, [user]);
+
+  useEffect(() => {
+    if (ready) {
+      setIsLoading(false);
+    }
+  }, [ready]);
+
   return (
     <>
       {variant === "primary" ? (
         <Button
           onClick={() => open()}
-          disabled={!ready}
+          disabled={!ready || isLoading}
           className="plaidlink-primary"
         >
           Connect Bank
@@ -73,6 +96,7 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
         <Button
           className="plaidlink-ghost"
           variant="ghost"
+          disabled={!ready || isLoading}
           onClick={() => open()}
         >
           <Image
@@ -89,6 +113,7 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
         <Button
           className={cn("plaidlink-default", "px-3")}
           onClick={() => open()}
+          disabled={!ready || isLoading}
         >
           <Image
             src="/icons/connect-bank.svg"

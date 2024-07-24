@@ -17,7 +17,15 @@ export default async function Home({
 
   const accountsData = accounts.data;
   const appwriteItemId = (id as string) ?? accountsData?.[0]?.appwriteItemId;
-  const account = await getAccount({ appwriteItemId });
+
+  let account: {
+    data: Account;
+    transactions: Transaction[];
+  } | null = null;
+
+  if (appwriteItemId) {
+    account = await getAccount({ appwriteItemId });
+  }
 
   return (
     <section className="home">

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "./ui/use-toast";
+import { formatNumeral } from "cleave-zen";
 
 import { createTransfer } from "@/lib/actions/dwolla.actions";
 import { createTransaction } from "@/lib/actions/transaction.actions";
@@ -27,13 +28,10 @@ import {
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
-const formSchema = z.object({
+const paymentTransferFormSchema = z.object({
   email: z.string().email("Invalid email address"),
   name: z.string().min(4, "Transfer note is too short"),
-  amount: z.coerce
-    .number()
-    .gt(0)
-    .refine((num) => parseFloat(num.toFixed(2))),
+  amount: z.string(),
   senderBank: z.string().min(4, "Please select a valid bank account"),
   sharableId: z.string().min(8, "Please select a valid sharable Id"),
 });
@@ -43,18 +41,18 @@ export function PaymentTransferForm({ accounts }: PaymentTransferFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof paymentTransferFormSchema>>({
+    resolver: zodResolver(paymentTransferFormSchema),
     defaultValues: {
       name: "",
       email: "",
-      amount: 0,
+      amount: "$",
       senderBank: "",
       sharableId: "",
     },
   });
 
-  const submit = async (data: z.infer<typeof formSchema>) => {
+  const submit = async (data: z.infer<typeof paymentTransferFormSchema>) => {
     setIsLoading(true);
 
     try {
@@ -69,10 +67,12 @@ export function PaymentTransferForm({ accounts }: PaymentTransferFormProps) {
 
       if (!senderBank) throw new Error("Unable to retrieve sender's bank info");
 
+      const amount = parseFloat(data.amount.replace("$", ""));
+
       const transferParams = {
         sourceFundingSourceUrl: senderBank!.fundingSourceUrl,
         destinationFundingSourceUrl: receiverBank!.fundingSourceUrl,
-        amount: data.amount,
+        amount: amount,
       };
 
       // create transfer
@@ -81,9 +81,10 @@ export function PaymentTransferForm({ accounts }: PaymentTransferFormProps) {
       if (!transfer) throw new Error("Unable to create transfer");
 
       // create transfer transaction
+
       const transaction: CreateTransactionParams = {
         name: data.name,
-        amount: data.amount,
+        amount: amount,
         senderId: senderBank!.userId.$id,
         senderBankId: senderBank!.$id,
         receiverId: receiverBank!.userId.$id,
@@ -232,7 +233,7 @@ export function PaymentTransferForm({ accounts }: PaymentTransferFormProps) {
         <FormField
           control={form.control}
           name="amount"
-          render={({ field }) => (
+          render={({ field: { onChange, ...fieldProps } }) => (
             <FormItem className="border-y border-gray-200">
               <div className="payment-transfer_form-item py-5">
                 <FormLabel className="text-14 w-full max-w-[280px] font-medium text-gray-700">
@@ -243,7 +244,18 @@ export function PaymentTransferForm({ accounts }: PaymentTransferFormProps) {
                     <Input
                       placeholder="ex: 5.00"
                       className="input-class"
-                      {...field}
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        form.setValue(
+                          "amount",
+                          formatNumeral(value, {
+                            numeralDecimalScale: 2,
+                            prefix: "$",
+                          })
+                        );
+                      }}
+                      {...fieldProps}
                     />
                   </FormControl>
                   <FormMessage className="text-12 text-red-500" />

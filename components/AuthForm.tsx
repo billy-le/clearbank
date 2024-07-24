@@ -15,12 +15,13 @@ import { signIn, signUp } from "@/lib/actions/user.actions";
 import { authFormSchema } from "@/lib/schemas/auth";
 import { PlaidLink } from "./PlaidLink";
 import { useToast } from "@/components/ui/use-toast";
+import { formatDate, formatGeneral } from "cleave-zen";
 
 export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
-  const [user, setUser] = useState<User | null>(null);
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const authSchema = authFormSchema(type);
 
@@ -60,6 +61,7 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
           });
           if (!newUser) throw new Error("Unable to create account");
           setUser(newUser);
+          setIsLoading(false);
           break;
         }
         case "sign-in": {
@@ -84,9 +86,8 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
           variant: "destructive",
         });
       }
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   }
 
   return (
@@ -158,12 +159,34 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
                       name="state"
                       label="State"
                       placeholder="ex. NY"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const state = formatGeneral(value, {
+                          blocks: [2],
+                          numericOnly: false,
+                          uppercase: true,
+                        });
+
+                        form.setValue("state", state, {
+                          shouldValidate: form.formState.isSubmitted,
+                        });
+                      }}
                     />
                     <CustomInput
                       form={form}
                       name="postalCode"
                       label="Postal Code"
                       placeholder="ex. 11011"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const postalCode = formatGeneral(value, {
+                          blocks: [5],
+                        });
+
+                        form.setValue("postalCode", postalCode, {
+                          shouldValidate: form.formState.isSubmitted,
+                        });
+                      }}
                     />
                   </div>
                   <div className="flex gap-4">
@@ -172,12 +195,36 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
                       name="dateOfBirth"
                       label="Date Of Birth"
                       placeholder="YYYY-MM-DD"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const date = formatDate(value, {
+                          delimiter: "-",
+                          datePattern: ["Y", "m", "d"],
+                          delimiterLazyShow: true,
+                        });
+
+                        form.setValue("dateOfBirth", date, {
+                          shouldValidate: form.formState.isSubmitted,
+                        });
+                      }}
                     />
                     <CustomInput
                       form={form}
                       name="ssn"
                       label="SSN"
-                      placeholder="ex. 123456789"
+                      placeholder="ex. 123-45-6789"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const ssn = formatGeneral(value, {
+                          delimiter: "-",
+                          delimiterLazyShow: true,
+                          blocks: [3, 2, 4],
+                        });
+
+                        form.setValue("ssn", ssn, {
+                          shouldValidate: form.formState.isSubmitted,
+                        });
+                      }}
                     />
                   </div>
                 </>
@@ -211,18 +258,27 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
               </div>
             </form>
           </Form>
-          <footer className="flex justify-center gap-1">
-            <p className="text-14 font-normal text-gray-600">
-              {type === "sign-in"
-                ? "Don't have an account?"
-                : "Already have an account?"}
-            </p>
-            <Link
-              href={type === "sign-in" ? "/sign-up" : "/sign-in"}
-              className="form-link"
-            >
-              {type === "sign-in" ? "Sign up" : "Sign in"}
-            </Link>
+
+          <footer className="flex justify-center gap-1 text-14 font-normal text-gray-600">
+            {!isLoading ? (
+              <>
+                <p>
+                  {type === "sign-in"
+                    ? "Don't have an account?"
+                    : "Already have an account?"}
+                </p>
+                <Link
+                  href={type === "sign-in" ? "/sign-up" : "/sign-in"}
+                  className="form-link"
+                >
+                  {type === "sign-in" ? "Sign up" : "Sign in"}
+                </Link>
+              </>
+            ) : (
+              `One moment. ${
+                type === "sign-in" ? "Signing you in..." : "Signing you up..."
+              }`
+            )}
           </footer>
         </>
       )}

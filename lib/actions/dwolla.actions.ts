@@ -49,10 +49,33 @@ export const createOnDemandAuthorization = async () => {
   }
 };
 
+export async function findDwollaCustomer(email: string) {
+  try {
+    return await dwollaClient
+      .get("customers", {
+        email,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          const customers: any[] = res.body["_embedded"]?.customers ?? [];
+          if (customers.length) {
+            return customers[0];
+          }
+          return null;
+        }
+        return null;
+      });
+  } catch (err) {
+    handleError("Error finding Dwolla Customer", err);
+    return null;
+  }
+}
+
 export const createDwollaCustomer = async (
   newCustomer: NewDwollaCustomerParams
 ) => {
   try {
+    // returns dwolla customer id
     return await dwollaClient
       .post("customers", newCustomer)
       .then((res) => res.headers.get("location"));

@@ -19,7 +19,11 @@ import {
   ProcessorTokenCreateRequestProcessorEnum,
 } from "plaid";
 import { revalidatePath } from "next/cache";
-import { addFundingSource, createDwollaCustomer } from "./dwolla.actions";
+import {
+  addFundingSource,
+  createDwollaCustomer,
+  findDwollaCustomer,
+} from "./dwolla.actions";
 
 import type { Models } from "node-appwrite";
 
@@ -84,13 +88,23 @@ export async function signUp({
     );
     if (!newUserAccount) throw new Error("Error creating user");
 
-    const dwollaCustomerUrl = await createDwollaCustomer({
-      ...data,
-      type: "personal",
-    });
-    if (!dwollaCustomerUrl) throw new Error("Error creating dwolla customer");
+    const existingDwollaCustomer = await findDwollaCustomer(data.email);
 
-    const dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+    let dwollaCustomerId: string;
+    if (existingDwollaCustomer) {
+      dwollaCustomerId = existingDwollaCustomer.id;
+    } else {
+      const dwollaCustomerUrl = await createDwollaCustomer({
+        ...data,
+        type: "personal",
+      });
+      if (!dwollaCustomerUrl) throw new Error("Error creating Dwolla Customer");
+      dwollaCustomerId = extractCustomerIdFromUrl(dwollaCustomerUrl);
+    }
+
+    if (!dwollaCustomerId) {
+      throw new Error("Error retrieving Dwolla Customer ID");
+    }
 
     const newUser = await database.createDocument(
       APPWRITE_DATABASE_ID,
@@ -100,7 +114,6 @@ export async function signUp({
         ...data,
         userId: newUserAccount.$id,
         dwollaCustomerId,
-        dwollaCustomerUrl,
       }
     );
 

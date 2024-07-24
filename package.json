@@ -21,6 +21,7 @@
     "@sentry/nextjs": "^8",
     "chart.js": "^4.4.3",
     "class-variance-authority": "^0.7.0",
+    "cleave-zen": "^0.0.17",
     "clsx": "^2.1.1",
     "dwolla-v2": "^3.4.0",
     "lucide-react": "^0.400.0",

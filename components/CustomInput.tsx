@@ -13,6 +13,7 @@ type CustomInputProps<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   placeholder: string;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
   type?: JSX.IntrinsicElements["input"]["type"];
 };
 
@@ -21,13 +22,14 @@ export function CustomInput<T extends FieldValues>({
   name,
   label,
   placeholder,
+  onChange,
   type = "text",
 }: CustomInputProps<T>) {
   return (
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
+      render={({ field: { onChange: fieldOnChange, ...fieldProps } }) => (
         <FormItem className="form-item">
           <FormLabel className="form-label">{label}</FormLabel>
           <FormControl>
@@ -35,7 +37,14 @@ export function CustomInput<T extends FieldValues>({
               placeholder={placeholder}
               className="input-class"
               type={type}
-              {...field}
+              onChange={(e) => {
+                if (onChange) {
+                  onChange(e);
+                } else {
+                  fieldOnChange(e);
+                }
+              }}
+              {...fieldProps}
             />
           </FormControl>
           <FormMessage className="form-message" />
