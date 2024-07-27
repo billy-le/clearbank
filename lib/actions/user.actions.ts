@@ -35,6 +35,8 @@ const {
   PLAID_SECRET,
 } = process.env;
 
+const MAX_AGE = 60 * 60;
+
 export async function getUserInfo({
   userId,
 }: GetUserInfoParams): Promise<User | null> {
@@ -61,6 +63,7 @@ export async function signIn({ email, password }: SignInProps) {
       httpOnly: true,
       sameSite: "strict",
       secure: true,
+      maxAge: MAX_AGE,
     });
 
     const user = await getUserInfo({ userId: session.userId });
@@ -127,6 +130,7 @@ export async function signUp({
       httpOnly: true,
       sameSite: "strict",
       secure: true,
+      maxAge: MAX_AGE,
     });
 
     return parseStringify(newUser);

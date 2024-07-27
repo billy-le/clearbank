@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   cn,
@@ -35,10 +35,13 @@ function CategoryBadge({ category }: CategoryBadgeProps) {
 }
 
 export function TransactionsTable({ transactions }: TransactionTableProps) {
+  const accounts = new Set(transactions.map((t) => t.accountId));
+
   return (
     <Table>
       <TableHeader className="bg-slate-50">
         <TableRow>
+          {accounts.size > 1 && <TableHead className="px-2">Account</TableHead>}
           <TableHead className="px-2">Transaction</TableHead>
           <TableHead className="px-2">Amount</TableHead>
           <TableHead className="px-2">Status</TableHead>
@@ -53,7 +56,19 @@ export function TransactionsTable({ transactions }: TransactionTableProps) {
           const amount = formatAmount(transaction.amount);
           return (
             <TableRow key={transaction.id}>
-              <TableCell className="max-w-[250px] pl-2 pr-10">
+              {accounts.size > 1 && (
+                <TableCell className="w-16 pl-2 pr-8">
+                  <p className="truncate w-full">
+                    {transaction.accountId
+                      .substring(0, 4)
+                      .replaceAll(/[a-zA-Z0-9]/gi, "●")}
+                    {transaction.accountId.substring(
+                      transaction.accountId.length - 4
+                    )}
+                  </p>
+                </TableCell>
+              )}
+              <TableCell className="max-w-[250px] pl-2 pr-8">
                 {transaction.image ? (
                   <Avatar>
                     <AvatarImage src={transaction.image} />

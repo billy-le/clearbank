@@ -1,8 +1,9 @@
 export const dynamic = "force-dynamic";
 import { Inter, IBM_Plex_Serif } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
-import "./globals.css";
+
 import type { Metadata } from "next";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const ibmPlexSerif = IBM_Plex_Serif({
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

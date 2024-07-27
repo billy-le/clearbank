@@ -1,11 +1,23 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { BankCard } from "@/components/BankCard";
 import { countTransactionCategories } from "@/lib/utils";
 import { Category } from "./Category";
+import { Footer } from "./Footer";
+import { useAppState } from "@/lib/providers/app.provider";
 
-export function RightSidebar({ user, transactions, banks }: RightSidebarProps) {
+export function RightSidebar({
+  transactions,
+}: {
+  transactions: Transaction[];
+}) {
+  const {
+    state: { user, accounts },
+  } = useAppState();
   const categories: CategoryCount[] = countTransactionCategories(transactions);
+  const banks = accounts.slice(0, 2);
   return (
     <aside className="right-sidebar">
       <section className="flex flex-col pb-8">
@@ -13,14 +25,14 @@ export function RightSidebar({ user, transactions, banks }: RightSidebarProps) {
         <div className="profile">
           <div className="profile-img">
             <span className="text-5xl font-bold text-blue-500">
-              {user.firstName?.[0]}
+              {user?.firstName?.[0]}
             </span>
           </div>
           <div className="profile-details">
             <h1 className="profile-name">
-              {user.firstName} {user.lastName}
+              {user?.firstName} {user?.lastName}
             </h1>
-            <p className="profile-email">{user.email}</p>
+            <p className="profile-email">{user?.email}</p>
           </div>
         </div>
       </section>
@@ -38,7 +50,7 @@ export function RightSidebar({ user, transactions, banks }: RightSidebarProps) {
             <div className="relative z-10">
               <BankCard
                 account={banks[0]}
-                userName={`${user.firstName} ${user.lastName}`}
+                userName={`${user?.firstName} ${user?.lastName}`}
                 showBalance={false}
               />
             </div>
@@ -46,7 +58,7 @@ export function RightSidebar({ user, transactions, banks }: RightSidebarProps) {
               <div className="absolute right-0 top-8 z-0 w-[90%]">
                 <BankCard
                   account={banks[1]}
-                  userName={`${user.firstName} ${user.lastName}`}
+                  userName={`${user?.firstName} ${user?.lastName}`}
                   showBalance={false}
                 />
               </div>
@@ -63,6 +75,8 @@ export function RightSidebar({ user, transactions, banks }: RightSidebarProps) {
           </div>
         </div>
       </section>
+
+      <Footer type="desktop" />
     </aside>
   );
 }

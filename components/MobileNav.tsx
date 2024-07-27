@@ -12,8 +12,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Footer } from "@/components/Footer";
+import { useAppState } from "@/lib/providers/app.provider";
 
-export function MobileNav({ user }: MobileNavProps) {
+export function MobileNav() {
+  const {
+    state: { user },
+  } = useAppState();
+  if (!user) return null;
+
   const pathname = usePathname();
   return (
     <section className="max-w-[264px]">
@@ -79,7 +85,7 @@ export function MobileNav({ user }: MobileNavProps) {
                 );
               })}
             </nav>
-            <Footer user={user} type="mobile" />
+            <Footer type="mobile" />
           </div>
         </SheetContent>
       </Sheet>

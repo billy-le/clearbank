@@ -4,12 +4,19 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/actions/user.actions";
 import { useRouter } from "next/navigation";
+import { useAppState } from "@/lib/providers/app.provider";
 
-export function Footer({ user, type }: FooterProps) {
+export function Footer({ type }: FooterProps) {
   const router = useRouter();
+  const {
+    state: { user },
+    dispatch,
+  } = useAppState();
+
   async function handleSignOut() {
     const signedOut = await signOut();
     if (signedOut) {
+      dispatch({ type: "SIGN_OUT" });
       router.push("/sign-in");
     }
   }
@@ -20,15 +27,15 @@ export function Footer({ user, type }: FooterProps) {
         className={type === "desktop" ? "footer_name" : "footer_name-mobile"}
       >
         <p className="text-xl font-bold text-gray-700">
-          {user.firstName.substring(0, 2)}
+          {user?.firstName.substring(0, 2)}
         </p>
       </div>
       <div
         className={type === "desktop" ? "footer_email" : "footer_email-mobile"}
       >
-        <h1 className="text-14 truncate font-normal text-gray-600">{`${user.firstName} ${user.lastName}`}</h1>
+        <h1 className="text-14 truncate font-normal text-gray-600">{`${user?.firstName} ${user?.lastName}`}</h1>
         <p className="text-14 truncate font-normal text-gray-600">
-          {user.email}
+          {user?.email}
         </p>
       </div>
       <Button className="footer_image" onClick={handleSignOut}>

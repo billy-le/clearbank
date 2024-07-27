@@ -151,7 +151,6 @@ declare interface HeaderBoxProps {
   type?: "title" | "greeting";
   title: string;
   subtext: string;
-  user?: string;
 }
 
 declare interface MobileNavProps {
@@ -208,19 +207,15 @@ declare interface TotlaBalanceBoxProps {
 }
 
 declare interface FooterProps {
-  user: User;
   type?: "desktop" | "mobile";
 }
 
 declare interface RightSidebarProps {
-  user: User;
   transactions: Transaction[];
   banks: Account[];
 }
 
-declare interface SiderbarProps {
-  user: User;
-}
+declare interface SiderbarProps {}
 
 declare interface RecentTransactionsProps {
   accounts: Account[];

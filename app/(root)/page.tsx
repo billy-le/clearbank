@@ -1,31 +1,28 @@
+"use client";
+
 import { HeaderBox } from "@/components/HeaderBox";
 import { RecentTransactions } from "@/components/RecentTransactions";
 import { RightSidebar } from "@/components/RightSidebar";
 import { TotalBalanceBox } from "@/components/TotalBalanceBox";
-import { getAccount, getAccounts } from "@/lib/actions/bank.actions";
-import { getLoggedInUser } from "@/lib/actions/user.actions";
+import { getAccount } from "@/lib/actions/bank.actions";
+import { useGetAccountDetails } from "@/lib/hooks/useAccountDetails";
+import { useAppState } from "@/lib/providers/app.provider";
+import { useEffect } from "react";
 
 export default async function Home({
   searchParams: { id, page },
 }: SearchParamProps) {
   const pageNum = parseInt(page as string, 10);
   const currentPage = page && !isNaN(pageNum) ? pageNum : 1;
-  const user = await getLoggedInUser();
-  if (!user) return null;
-  const accounts = await getAccounts({ userId: user!.$id });
-  if (!accounts) return null;
+  const {
+    state: { accounts, totalBanks, totalCurrentBalance, accountDetails },
+  } = useAppState();
 
-  const accountsData = accounts.data;
-  const appwriteItemId = (id as string) ?? accountsData?.[0]?.appwriteItemId;
+  useGetAccountDetails(id as string);
 
-  let account: {
-    data: Account;
-    transactions: Transaction[];
-  } | null = null;
+  const appwriteItemId = (id as string) ?? accounts?.[0]?.appwriteItemId;
 
-  if (appwriteItemId) {
-    account = await getAccount({ appwriteItemId });
-  }
+  const transactions = accountDetails[appwriteItemId]?.transactions ?? [];
 
   return (
     <section className="home">
@@ -34,27 +31,22 @@ export default async function Home({
           <HeaderBox
             type="greeting"
             title="Welcome"
-            user={`${user!.firstName} ${user!.lastName}`}
             subtext="Access and manage your account and transactions efficiently"
           />
           <TotalBalanceBox
-            accounts={accountsData}
-            totalBanks={accounts.totalBanks}
-            totalCurrentBalance={accounts.totalCurrentBalance}
+            accounts={accounts}
+            totalBanks={totalBanks}
+            totalCurrentBalance={totalCurrentBalance}
           />
         </header>
         <RecentTransactions
-          accounts={accountsData}
+          accounts={accounts}
           appwriteItemId={appwriteItemId}
           page={currentPage}
-          transactions={account?.transactions ?? []}
+          transactions={transactions}
         />
       </div>
-      <RightSidebar
-        user={user!}
-        transactions={account?.transactions!}
-        banks={accountsData.slice(0, 2)}
-      />
+      <RightSidebar transactions={transactions} />
     </section>
   );
 }

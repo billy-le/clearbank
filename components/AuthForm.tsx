@@ -20,8 +20,8 @@ import { formatDate, formatGeneral } from "cleave-zen";
 export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
   const router = useRouter();
   const { toast } = useToast();
-  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   const authSchema = authFormSchema(type);
 

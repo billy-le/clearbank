@@ -7,8 +7,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Footer } from "@/components/Footer";
 import { PlaidLink } from "./PlaidLink";
+import { useAppState } from "@/lib/providers/app.provider";
 
-export function Sidebar({ user }: SiderbarProps) {
+export function Sidebar() {
+  const {
+    state: { user },
+  } = useAppState();
+  if (!user) return;
   const pathname = usePathname();
   return (
     <section className="sidebar">
@@ -56,7 +61,7 @@ export function Sidebar({ user }: SiderbarProps) {
         })}
         <PlaidLink user={user} variant="ghost" />
       </nav>
-      <Footer user={user} type="desktop" />
+      <Footer type="desktop" />
     </section>
   );
 }

@@ -21,12 +21,15 @@ export function BankDropdown({
 }: BankDropdownProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [selected, setSeclected] = useState(accounts[0]);
+  const [selected, setSelected] = useState(() => {
+    if (accounts.length) return accounts[0];
+    return null;
+  });
 
   const handleBankChange = (id: string) => {
     const account = accounts.find((account) => account.appwriteItemId === id)!;
 
-    setSeclected(account);
+    setSelected(account);
     const newUrl = formUrlQuery({
       params: searchParams.toString(),
       key: "id",
@@ -41,7 +44,7 @@ export function BankDropdown({
 
   return (
     <Select
-      defaultValue={selected.id}
+      defaultValue={selected?.id}
       onValueChange={(value) => handleBankChange(value)}
     >
       <SelectTrigger
@@ -53,7 +56,13 @@ export function BankDropdown({
           height={20}
           alt="account"
         />
-        <p className="line-clamp-1 w-full text-left">{selected.name}</p>
+        <p className="line-clamp-1 w-full text-left">
+          {selected
+            ? selected.name
+            : accounts.length > 0
+            ? "Please select a bank account"
+            : "No bank accounts found"}
+        </p>
       </SelectTrigger>
       <SelectContent
         className={`w-full bg-white md:w-[300px] ${otherStyles}`}
