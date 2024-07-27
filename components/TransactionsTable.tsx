@@ -70,9 +70,12 @@ export function TransactionsTable({ transactions }: TransactionTableProps) {
               )}
               <TableCell className="max-w-[250px] pl-2 pr-8">
                 {transaction.image ? (
-                  <Avatar>
-                    <AvatarImage src={transaction.image} />
-                  </Avatar>
+                  <div className="flex items-center gap-4">
+                    <Avatar>
+                      <AvatarImage src={transaction.image} />
+                    </Avatar>
+                    <p className="truncate w-full">{transaction.name}</p>
+                  </div>
                 ) : (
                   <p className="truncate w-full">{transaction.name}</p>
                 )}

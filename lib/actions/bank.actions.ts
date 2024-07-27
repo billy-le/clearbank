@@ -67,7 +67,7 @@ export async function getAccount({
 } | null> {
   try {
     // get bank from db
-    const bank = await getBank({ documentId: appwriteItemId });
+    const bank: Bank = await getBank({ documentId: appwriteItemId });
 
     // get account info from plaid
     const accountsResponse = await plaidClient.accountsGet({
@@ -101,17 +101,18 @@ export async function getAccount({
       accessToken: bank?.accessToken!,
     });
 
-    const account = {
+    const account: Account = {
       id: accountData.account_id,
       availableBalance: accountData.balances.available!,
       currentBalance: accountData.balances.current!,
       institutionId: institution?.institution_id!,
       name: accountData.name,
-      officialName: accountData.official_name,
+      officialName: accountData.official_name ?? "",
       mask: accountData.mask!,
       type: accountData.type as string,
       subtype: accountData.subtype! as string,
       appwriteItemId: bank?.$id,
+      shareableId: bank.shareableId,
     };
 
     // sort transactions by date such that the most recent transaction is first
