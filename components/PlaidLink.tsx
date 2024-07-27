@@ -25,6 +25,7 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
 
   const onSuccess = useCallback<PlaidLinkOnSuccess>(
     async (publicToken: string) => {
+      if (!user) return;
       await exchangePublicToken({
         publicToken,
         user,
@@ -68,6 +69,7 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
   const { open, ready } = usePlaidLink(config);
 
   useEffect(() => {
+    if (!user) return;
     const getLinkToken = async () => {
       const data = await createLinkToken(user);
       setToken(data?.linkToken ?? null);

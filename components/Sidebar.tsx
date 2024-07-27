@@ -13,7 +13,6 @@ export function Sidebar() {
   const {
     state: { user },
   } = useAppState();
-  if (!user) return;
   const pathname = usePathname();
   return (
     <section className="sidebar">
