@@ -28,8 +28,8 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
     defaultValues: {
-      email: type === "sign-in" ? "tyler_herschel@example.com" : "",
-      password: type === "sign-in" ? "12345678" : "",
+      email: type === "sign-in" ? "" : "",
+      password: type === "sign-in" ? "" : "",
       firstName: "",
       lastName: "",
       address1: "",

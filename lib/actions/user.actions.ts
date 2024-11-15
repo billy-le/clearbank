@@ -173,7 +173,7 @@ export async function createLinkToken(
 			client_id: PLAID_CLIENT_ID,
 			secret: PLAID_SECRET,
 			client_name: `${user.firstName} ${user.lastName}`,
-			products: [Products.Auth],
+			products: [Products.Auth, Products.Transactions],
 			language: "en",
 			country_codes: [CountryCode.Us],
 		};

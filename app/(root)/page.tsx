@@ -10,7 +10,6 @@ import { useAppState } from "@/lib/providers/app.provider";
 export default async function Home({
   searchParams: { id, page },
 }: SearchParamProps) {
-  console.log({ id, page })
   const pageNum = parseInt(page as string, 10);
   const currentPage = page && !isNaN(pageNum) ? pageNum : 1;
   const {
