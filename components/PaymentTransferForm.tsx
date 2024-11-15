@@ -105,7 +105,6 @@ export function PaymentTransferForm({ accounts }: PaymentTransferFormProps) {
           variant: "destructive",
         });
       }
-      console.log("Submitting create transfer request failed: ", error);
     }
 
     setIsLoading(false);

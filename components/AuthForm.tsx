@@ -28,8 +28,8 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
   const form = useForm<z.infer<typeof authSchema>>({
     resolver: zodResolver(authSchema),
     defaultValues: {
-      email: type === "sign-in" ? "tyler_herschel@example.com" : "",
-      password: type === "sign-in" ? "12345678" : "",
+      email: type === "sign-in" ? "" : "",
+      password: type === "sign-in" ? "" : "",
       firstName: "",
       lastName: "",
       address1: "",
@@ -71,7 +71,6 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
           });
 
           if (!response) throw new Error("Unable to login");
-
           router.push("/");
           break;
         }
@@ -275,8 +274,7 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
                 </Link>
               </>
             ) : (
-              `One moment. ${
-                type === "sign-in" ? "Signing you in..." : "Signing you up..."
+              `One moment. ${type === "sign-in" ? "Signing you in..." : "Signing you up..."
               }`
             )}
           </footer>
