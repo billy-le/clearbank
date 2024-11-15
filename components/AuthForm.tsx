@@ -71,7 +71,6 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
           });
 
           if (!response) throw new Error("Unable to login");
-
           router.push("/");
           break;
         }
@@ -275,8 +274,7 @@ export function AuthForm({ type }: { type: "sign-in" | "sign-up" }) {
                 </Link>
               </>
             ) : (
-              `One moment. ${
-                type === "sign-in" ? "Signing you in..." : "Signing you up..."
+              `One moment. ${type === "sign-in" ? "Signing you in..." : "Signing you up..."
               }`
             )}
           </footer>

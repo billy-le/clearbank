@@ -4,14 +4,13 @@ import { HeaderBox } from "@/components/HeaderBox";
 import { RecentTransactions } from "@/components/RecentTransactions";
 import { RightSidebar } from "@/components/RightSidebar";
 import { TotalBalanceBox } from "@/components/TotalBalanceBox";
-import { getAccount } from "@/lib/actions/bank.actions";
 import { useGetAccountDetails } from "@/lib/hooks/useAccountDetails";
 import { useAppState } from "@/lib/providers/app.provider";
-import { useEffect } from "react";
 
 export default async function Home({
   searchParams: { id, page },
 }: SearchParamProps) {
+  console.log({ id, page })
   const pageNum = parseInt(page as string, 10);
   const currentPage = page && !isNaN(pageNum) ? pageNum : 1;
   const {
