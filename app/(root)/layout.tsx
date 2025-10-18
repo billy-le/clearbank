@@ -7,6 +7,7 @@ import { getLoggedInUser } from "@/lib/actions/user.actions";
 import { AppProvider } from "@/lib/providers/app.provider";
 import type { AppState } from "@/lib/providers/app.provider";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 export default async function RootLayout({
   children,
@@ -14,27 +15,30 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const user = await getLoggedInUser();
+  if (!user) {
+    redirect('/sign-in');
+  }
+
   let accounts: Account[] = [];
   let totalCurrentBalance = 0;
   let totalBanks = 0;
   let accountDetails: AppState["accountDetails"] = {};
-  if (user) {
-    const accountsRes = await getAccounts({ userId: user.$id });
-    if (accountsRes) {
-      accounts = accountsRes.data;
-      totalBanks = accountsRes.totalBanks;
-      totalCurrentBalance = accountsRes.totalCurrentBalance;
-      const accountsData = accountsRes.data;
-      const appwriteItemId = accountsData?.[0]?.appwriteItemId;
 
-      if (appwriteItemId) {
-        const accountRes = await getAccount({ appwriteItemId });
-        if (accountRes) {
-          accountDetails[appwriteItemId] = {
-            info: accountRes.data,
-            transactions: accountRes.transactions,
-          };
-        }
+  const accountsRes = await getAccounts({ userId: user.$id });
+  if (accountsRes) {
+    accounts = accountsRes.data;
+    totalBanks = accountsRes.totalBanks;
+    totalCurrentBalance = accountsRes.totalCurrentBalance;
+    const accountsData = accountsRes.data;
+    const appwriteItemId = accountsData?.[0]?.appwriteItemId;
+
+    if (appwriteItemId) {
+      const accountRes = await getAccount({ appwriteItemId });
+      if (accountRes) {
+        accountDetails[appwriteItemId] = {
+          info: accountRes.data,
+          transactions: accountRes.transactions,
+        };
       }
     }
   }
