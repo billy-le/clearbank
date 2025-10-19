@@ -16,10 +16,12 @@ import {
 } from "@/lib/actions/user.actions";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { createPortal } from "react-dom";
 
 export function PlaidLink({ user, variant }: PlaidLinkProps) {
   const [token, setToken] = useState<null | string>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -48,15 +50,18 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
             variant: "destructive",
           });
           setIsLoading(false);
+          setIsOpen(false);
           break;
         }
         case PlaidLinkStableEvent.OPEN: {
           setIsLoading(true);
+          setIsOpen(true);
           break;
         }
         case PlaidLinkStableEvent.HANDOFF:
         case PlaidLinkStableEvent.EXIT: {
           setIsLoading(false);
+          setIsOpen(false);
           break;
         }
         default: {
@@ -84,12 +89,27 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
     }
   }, [ready]);
 
+  function onConnectBankClick() {
+    open();
+  }
+
+  const isDisabled = !ready || isLoading;
+
   return (
     <>
+      {
+        isOpen && createPortal(<div className="fixed inset-0 bg-black-1/50">
+          <div className="absolute top-[10%] left-1/2 -translate-y-[10%] -translate-x-1/2 flex flex-col justify-center bg-white rounded-md h-40 min-w-36 p-6">
+            <p>To connect a guest account please use the following:</p>
+            <p className="text-gray-600">Username: user_good</p>
+            <p className="text-gray-600">Password: pass_good</p>
+          </div>
+        </div>, document.body)
+      }
       {variant === "primary" ? (
         <Button
-          onClick={() => open()}
-          disabled={!ready || isLoading}
+          onClick={onConnectBankClick}
+          disabled={isDisabled}
           className="plaidlink-primary"
         >
           Connect Bank
@@ -98,8 +118,8 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
         <Button
           className="plaidlink-ghost"
           variant="ghost"
-          disabled={!ready || isLoading}
-          onClick={() => open()}
+          disabled={isDisabled}
+          onClick={onConnectBankClick}
         >
           <Image
             src="/icons/connect-bank.svg"
@@ -114,8 +134,8 @@ export function PlaidLink({ user, variant }: PlaidLinkProps) {
       ) : (
         <Button
           className={cn("plaidlink-default", "px-3")}
-          onClick={() => open()}
-          disabled={!ready || isLoading}
+          onClick={onConnectBankClick}
+          disabled={isDisabled}
         >
           <Image
             src="/icons/connect-bank.svg"
